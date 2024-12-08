@@ -1,0 +1,81 @@
+// ------------  Paquete e importaciones ------------
+package analizadores;
+
+import java_cup.runtime.*;
+import java.util.LinkedList;
+import abstracto.Instruccion;
+import simbolo.*;
+import instrucciones.Imprimir;
+import expresiones.*;
+
+
+//------> Codigo para el parser
+//------> Declaracion de variables, funciones y funciones de error
+
+parser code 
+{:
+    public String resultado = ""; 
+
+    public void syntax_error(Symbol s){
+            System.err.println("Error Sintactico: "+ s.value + " - Fila: " + s.right + " - Columna: " + s.left + ". Recuperado" );
+
+    }
+
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
+            System.err.println("Error Sintactico: "+ s.value + " - Fila: " + s.right + " - Columna: " + s.left + ". Sin recuperacion." );
+
+    }
+
+:}
+
+
+//------> Codigo para las acciones gramaticales (no tocar)
+action code
+{:  :}
+
+
+//------> Declaración de terminales
+terminal String ENTERO, DECIMAL, BOOLEANO, CARACTER, CADENA;
+terminal String PYC, PARIZQ, PARDER;
+terminal String MAS, MENOS;
+terminal String IMPRIMIR;
+
+
+//------> Declaración de no terminales
+non terminal LinkedList<Instruccion> inicio, listaInstr;
+non terminal Instruccion instrucciones, impresion;
+non terminal Instruccion variables;
+
+
+//------> Precedencia
+precedence left MAS, MENOS;
+
+
+//------> Definir Simbolo Inicial
+start with inicio; 
+
+
+// ------------>  Producciones  <------------
+
+inicio ::= listaInstr:a                                                         {: RESULT = a; :}
+;
+
+listaInstr ::= listaInstr:a instrucciones:b                                     {: RESULT = a; RESULT.add(b); :}
+        |   instrucciones:a                                                     {: RESULT = new LinkedList<Instruccion>(); RESULT.add(a); :}
+;
+
+instrucciones ::= impresion:a PYC                                               {: RESULT = a; :}
+;
+
+impresion ::= IMPRIMIR PARIZQ variables:a PARDER                                {: RESULT = new Imprimir(a, aleft, aright); :}
+;
+
+variables ::= ENTERO:a                                                          {: RESULT = new Nativo(Integer.parseInt(a), new Tipo(tipoDato.ENTERO), aleft, aright); :}
+        |   DECIMAL:a                                                           {: RESULT = new Nativo(new Double(a), new Tipo(tipoDato.DECIMAL), aleft, aright); :}
+        |   BOOLEANO:a                                                          {: RESULT = new Nativo(Boolean.parseBoolean(a), new Tipo(tipoDato.BOOLEANO), aleft, aright); :}
+        |   CARACTER:a                                                          {: RESULT = new Nativo(a, new Tipo(tipoDato.CARACTER), aleft, aright); :}
+        |   CADENA:a                                                            {: RESULT = new Nativo(a, new Tipo(tipoDato.CADENA), aleft, aright); :}
+        |   PARIZQ variables:a PARDER                                           {: RESULT = a; :}
+        |   variables:a MAS variables:b                                         {: RESULT = new Suma(a, b, aleft, aright); :}
+        |   variables:a MENOS variables :b                                      {:  :}
+;

@@ -11,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) {
         
-        //analizadores("src/analizadores/", "Lexer.jflex", "Parser.cup");
+        analizadores("src/analizadores/", "Lexer.jflex", "Parser.cup");
         
         String entrada = """
                          imprimir("Mi cadena");
@@ -27,7 +27,7 @@ public class Main {
                                                                                                                                                                                                                                                                                                                                 
                     """;
         
-        analizar(entrada);
+        //analizar(entrada);
         
     }
     

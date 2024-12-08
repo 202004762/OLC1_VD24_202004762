@@ -1,57 +1,38 @@
 package main;
 
-import compi.Parser;
+import abstracto.Instruccion;
+import analizadores.Parser;
 import java.io.StringReader;
+import java.util.LinkedList;
+import simbolo.*;
 
 
 public class Main {
-    
+
     public static void main(String[] args) {
         
-        // Generar Analizadores
-        //analizadores("src/compi/", "Lexer.jflex", "Parser.cup");         //este es el que se ejecuta primero para que actualice
+        //analizadores("src/analizadores/", "Lexer.jflex", "Parser.cup");
         
         String entrada = """
-                         {
-                         #Definición de conjuntos
-                         CONJ : conjuntoA -> 1,2,3,a,b ;
-                         CONJ : conjuntoB -> a~z;
-                         CONJ : conjuntoC -> 0~9;
-                         
-                         #Definición de operaciones
-                         OPERA : operacion1 -> & {conjuntoA} {conjuntoB};
-                         OPERA : operacion2 -> & U {conjuntoB} {conjuntoC} {conjuntoA};
-                         
-                         #Evaluamos conjuntos de datos
-                         EVALUAR ( {a, b, c} , operacion1 );
-                         EVALUAR ( {1, b} , operacion1 );
-                         }
-                         
-                         <!
-                         # Salida en consola
-                         ===============
-                         Evaluar: operacion1
-                         ===============
-                         a -> exitoso
-                         b -> exitoso
-                         c -> fallo
-                         ===============
-                         Evaluar: operacion1
-                         ===============
-                         1 -> exitoso
-                         b -> exitoso
-                         !>
-                         """;
+                         imprimir("Mi cadena");
+                         imprimir(2+5+"hola"+5.5);
+                         imprimir(3.33+5.8+"hola"+(5+10));
+                         imprimir(1+true+"hola"+true);
+                         imprimir(9.5+false+true);
+                         imprimir(false+1);
+                         imprimir(true+4.5);
+                         imprimir(true+"hola"+"aaa");
+                         imprimir('\u0000');
+                       
+                                                                                                                                                                                                                                                                                                                                
+                    """;
         
-        
-        analizar(entrada);    //y este es el segundo que se ejecuta///
+        analizar(entrada);
         
     }
     
     public static void analizadores(String ruta, String jflexFile, String cupFile){
-        
         try {
-            
             String opcionesJflex[] =  {ruta+jflexFile,"-d",ruta};
             jflex.Main.generate(opcionesJflex);
 
@@ -59,7 +40,6 @@ public class Main {
             java_cup.Main.main(opcionesCup);
             
         } catch (Exception e) {
-            
             System.out.println("No se ha podido generar los analizadores");
             System.out.println(e);
             
@@ -67,23 +47,34 @@ public class Main {
         
     }
     
-        // Realizar Analisis
-    public static void analizar (String entrada){
-        
+    // Realizar Analisis
+    public static void analizar(String entrada){
         try {
+            analizadores.Lexer lexer = new analizadores.Lexer(new StringReader(entrada)); 
+            analizadores.Parser parser = new Parser(lexer);
+            var resultado = parser.parse();
             
-            compi.Lexer lexer = new compi.Lexer(new StringReader(entrada)); 
-            compi.Parser parser = new Parser(lexer);
-            parser.parse();
+            var ast = new Arbol((LinkedList<Instruccion>)resultado.value);
+            var tabla = new tablaSimbolos();
+            
+            for(var a : ast.getInstrucciones()){
+                var res = a.interpretar(ast, tabla);
+                
+            }
+            
+            System.out.println(ast.getConsola());
+
             
         } catch (Exception e) {
-            
             System.out.println("Error fatal en compilación de entrada.");
             System.out.println(e);
             
         } 
         
     } 
+    
+    
+    
     
     
 }

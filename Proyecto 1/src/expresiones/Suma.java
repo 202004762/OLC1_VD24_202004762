@@ -31,7 +31,7 @@ public class Suma extends Instruccion {
         
         var valorDer = this.opDer.interpretar(arbol, tabla);
         if(valorDer instanceof Errores){
-            return valorIzq;
+            return valorDer;
             
         }
         
@@ -49,7 +49,7 @@ public class Suma extends Instruccion {
                     
                     case DECIMAL -> {
                         this.tipo.setTipo(tipoDato.DECIMAL);
-                        return (double) valorIzq + (double) valorDer;
+                        return (int) valorIzq + (double) valorDer;
                         
                     }
                     
@@ -62,7 +62,8 @@ public class Suma extends Instruccion {
                     
                     case CARACTER -> {
                         this.tipo.setTipo(tipoDato.ENTERO);
-                        
+                        char caracter = valorDer instanceof Character ? (char) valorDer : valorDer.toString().charAt(0);
+                        return (int) valorIzq + (int) caracter;
                         
                     }
                     
@@ -85,7 +86,7 @@ public class Suma extends Instruccion {
                 switch(tipoDer){
                     case ENTERO -> {
                         this.tipo.setTipo(tipoDato.DECIMAL);
-                        return (double) valorIzq + (double) valorDer;
+                        return (double) valorIzq + (int) valorDer;
                         
                     }
                     
@@ -104,7 +105,8 @@ public class Suma extends Instruccion {
                     
                     case CARACTER -> {
                         this.tipo.setTipo(tipoDato.DECIMAL);
-                        
+                        char caracter = valorDer instanceof Character ? (char) valorDer : valorDer.toString().charAt(0);
+                        return (double) valorIzq + (int) caracter;
                         
                     }
                     
@@ -207,6 +209,7 @@ public class Suma extends Instruccion {
                     
                     case CARACTER -> {
                         this.tipo.setTipo(tipoDato.CADENA);
+                        return valorIzq.toString() + valorDer.toString();
                         
                     }
                     

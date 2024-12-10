@@ -30,7 +30,7 @@ caracter = [']([\\]u[0-9A-Fa-f]{4})[']|[']([^\d\s])[']
 // ------------  Reglas Lexicas -------------------
 
 //Palabras reservadas
-"imprimir"       {return new Symbol(sym.IMPRIMIR, yycolumn, yyline, yytext());}
+"imprimir"      {return new Symbol(sym.IMPRIMIR, yycolumn, yyline, yytext());}
 
 
 
@@ -40,6 +40,12 @@ caracter = [']([\\]u[0-9A-Fa-f]{4})[']|[']([^\d\s])[']
 ")"             {return new Symbol(sym.PARDER, yycolumn, yyline, yytext());}
 "+"             {return new Symbol(sym.MAS, yycolumn, yyline, yytext());}
 "-"             {return new Symbol(sym.MENOS, yycolumn, yyline, yytext());}
+"*"             {return new Symbol(sym.POR, yycolumn, yyline, yytext());}
+"/"             {return new Symbol(sym.DIV, yycolumn, yyline, yytext());}
+"%"             {return new Symbol(sym.MODULO, yycolumn, yyline, yytext());}
+"^"             {return new Symbol(sym.POTE, yycolumn, yyline, yytext());}
+"$"             {return new Symbol(sym.RAIZ, yycolumn, yyline, yytext());}
+
 
 
 //Expresiones regulares
@@ -49,16 +55,14 @@ caracter = [']([\\]u[0-9A-Fa-f]{4})[']|[']([^\d\s])[']
 {cadena}        {String cadena = yytext(); 
                     cadena = cadena.substring(1, cadena.length() - 1); 
                     return new Symbol(sym.CADENA, yycolumn, yyline, cadena);}
-{caracter}      {return new Symbol(sym.CARACTER, yycolumn, yyline, yytext());}
-
-/*{String caracter = yytext(); 
+{caracter}      {String caracter = yytext(); 
                     caracter = caracter.substring(1, caracter.length() - 1); 
-                    return new Symbol(sym.CARACTER, yycolumn, yyline, caracter.charAt(1));}
-*/
+                    return new Symbol(sym.CARACTER, yycolumn, yyline, caracter);}
+
 
 //------> Ingorados 
 [ \t\r\n\f]                     {/* Espacios en blanco */}
-["/"].*                         {/* Comentario de una sola linea */}
+["/"]["/"].*                    {/* Comentario de una sola linea */}
 "/*"([^!]|("!"[^>]))* "*/"      {/* Comentario de mas de una linea */}
 
 

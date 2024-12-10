@@ -37,7 +37,9 @@ action code
 //------> Declaración de terminales
 terminal String ENTERO, DECIMAL, BOOLEANO, CARACTER, CADENA;
 terminal String PYC, PARIZQ, PARDER;
-terminal String MAS, MENOS;
+terminal String POTE, RAIZ;
+terminal String POR, DIV, MODULO;
+terminal String MAS, MENOS, UMENOS;
 terminal String IMPRIMIR;
 
 
@@ -48,7 +50,16 @@ non terminal Instruccion variables;
 
 
 //------> Precedencia
+
+
+
+
 precedence left MAS, MENOS;
+precedence left POR, DIV, MODULO;
+precedence nonassoc POTE, RAIZ;
+precedence right UMENOS;
+
+
 
 
 //------> Definir Simbolo Inicial
@@ -76,6 +87,13 @@ variables ::= ENTERO:a                                                          
         |   CARACTER:a                                                          {: RESULT = new Nativo(a, new Tipo(tipoDato.CARACTER), aleft, aright); :}
         |   CADENA:a                                                            {: RESULT = new Nativo(a, new Tipo(tipoDato.CADENA), aleft, aright); :}
         |   PARIZQ variables:a PARDER                                           {: RESULT = a; :}
+        |   MENOS variables:a                                                   {: RESULT = new Negacion(a, aleft, aright); :} %prec UMENOS
         |   variables:a MAS variables:b                                         {: RESULT = new Suma(a, b, aleft, aright); :}
-        |   variables:a MENOS variables :b                                      {:  :}
+        |   variables:a MENOS variables:b                                       {: RESULT = new Resta(a, b, aleft, aright); :}
+        |   variables:a POR variables:b                                         {: RESULT = new Multi(a, b, aleft, aright); :}
+        |   variables:a DIV variables:b                                         {: RESULT = new Division(a, b, aleft, aright); :}
+        |   variables:a MODULO variables:b                                      {: RESULT = new Modulo(a, b, aleft, aright); :}
+        |   variables:a POTE variables:b                                        {: RESULT = new Potencia(a, b, aleft, aright); :}
+        |   variables:a RAIZ variables:b                                        {: RESULT = new Raiz(a, b, aleft, aright); :}
+
 ;
